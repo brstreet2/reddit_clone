@@ -1,3 +1,4 @@
+import { authModalState } from "@/atoms/authModalAtom";
 import {
   Community,
   CommunitySnippet,
@@ -13,7 +14,7 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 const useCommunityData = () => {
   const [user] = useAuthState(auth);
@@ -21,11 +22,19 @@ const useCommunityData = () => {
     useRecoilState(communityState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const setAuthModalState = useSetRecoilState(authModalState);
 
   const onJoinOrLeaveCommunity = (
     communityData: Community,
     isJoined: boolean
   ) => {
+    if (!user) {
+      setAuthModalState({ open: true, view: "login" });
+      return;
+    }
+
+    setLoading(true);
+
     if (isJoined) {
       leaveCommunity(communityData.id);
       return;
@@ -86,7 +95,32 @@ const useCommunityData = () => {
     setLoading(false);
   };
 
-  const leaveCommunity = (communityId: string) => {};
+  const leaveCommunity = async (communityId: string) => {
+    try {
+      const batch = writeBatch(firestore);
+
+      batch.delete(
+        doc(firestore, `users/${user?.uid}/communitySnippets`, communityId)
+      );
+
+      batch.update(doc(firestore, "communities", communityId), {
+        numberOfMembers: increment(-1),
+      });
+
+      await batch.commit();
+
+      setCommunityStateValue((prev) => ({
+        ...prev,
+        mySnippets: prev.mySnippets.filter(
+          (item) => item.communityId !== communityId
+        ),
+      }));
+    } catch (error: any) {
+      console.log("leaveCommunity error", error.message);
+      setError(error.message);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (!user) return;
