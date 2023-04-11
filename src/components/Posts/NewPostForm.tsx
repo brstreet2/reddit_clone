@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Flex, Icon } from "@chakra-ui/react";
 import { User } from "firebase/auth";
 import {
@@ -88,6 +88,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({
       });
 
       console.log("HERE IS NEW POST ID", postDocRef.id);
+      console.log("Test POST:", communityId);
 
       // // check if selectedFile exists, if it does, do image processing
       if (selectedFile) {
@@ -100,7 +101,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({
         console.log("HERE IS DOWNLOAD URL", downloadURL);
       }
 
-      // Clear the cache to cause a refetch of the posts
+      //   Clear the cache to cause a refetch of the posts
       setPostItems((prev) => ({
         ...prev,
         postUpdateRequired: true,

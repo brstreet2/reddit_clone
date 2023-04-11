@@ -72,7 +72,6 @@ const About: React.FC<AboutProps> = ({
       await updateDoc(doc(firestore, "communities", communityData.id), {
         imageURL: downloadURL,
       });
-      console.log("HERE IS DOWNLOAD URL", downloadURL);
 
       // April 24 - added state update
       setCommunityStateValue((prev) => ({

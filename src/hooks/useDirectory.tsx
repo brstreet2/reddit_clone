@@ -1,3 +1,11 @@
+import React from "react";
+
+type useDirectoryProps = {};
+
+const useDirectory: React.FC<useDirectoryProps> = () => {
+  return <div>Have a good coding</div>;
+};
+export default useDirectory;
 // import { useRouter } from "next/router";
 // import React, { useEffect } from "react";
 // import { useRecoilState, useRecoilValue } from "recoil";
