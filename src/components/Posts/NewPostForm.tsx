@@ -18,6 +18,7 @@ import { postState } from "../../atoms/postsAtom";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import TextInputs from "./PostForm/TextInputs";
 import ImageUpload from "./PostForm/ImageUpload";
+import useSelectFile from "@/hooks/useSelectFile";
 
 const formTabs = [
   {
@@ -63,7 +64,8 @@ const NewPostForm: React.FC<NewPostFormProps> = ({
     title: "",
     body: "",
   });
-  const [selectedFile, setSelectedFile] = useState<string>();
+
+  const { selectedFile, setSelectedFile, onSelectFile } = useSelectFile();
   const selectFileRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -114,19 +116,6 @@ const NewPostForm: React.FC<NewPostFormProps> = ({
     setLoading(false);
   };
 
-  const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const reader = new FileReader();
-    if (event.target.files?.[0]) {
-      reader.readAsDataURL(event.target.files[0]);
-    }
-
-    reader.onload = (readerEvent) => {
-      if (readerEvent.target?.result) {
-        setSelectedFile(readerEvent.target?.result as string);
-      }
-    };
-  };
-
   const onTextChange = ({
     target: { name, value },
   }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -163,7 +152,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({
             setSelectedFile={setSelectedFile}
             setSelectedTab={setSelectedTab}
             selectFileRef={selectFileRef}
-            onSelectImage={onSelectImage}
+            onSelectImage={onSelectFile}
           />
         )}
       </Flex>
